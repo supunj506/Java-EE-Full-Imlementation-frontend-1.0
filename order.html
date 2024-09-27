@@ -303,7 +303,7 @@
     setOrderId();
 
     function checkMakeOrderAvailability() {
-        if (cusName.val() !== null && $("#orderTableBody tr").length !== 0 && orderCash.val() > orderTotal) {
+        if (cusName.val() !== null && $("#orderTableBody tr").length !== 0 && orderCash.val() >= orderTotal) {
             purchaseOrder.prop('disabled', false);
         } else {
             purchaseOrder.prop('disabled', true);
