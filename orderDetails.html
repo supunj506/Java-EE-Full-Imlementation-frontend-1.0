@@ -73,15 +73,19 @@
             <div id="orderDetailsInputSection">
 
                 <div class="orderDetailInputDiv">
-                    <lable for="orderSelectBox" class="label">Order ID:</lable>
+                    <lable for="orderSelectBox" class="label">Order ID</lable>
                     <select id="orderSelectBox" class="inputElement" type="text"></select>
                 </div>
                 <div class="orderDetailInputDiv">
-                    <lable for="orderItemCount" class="label">Item Count :</lable>
+                    <lable for="customerId" class="label">Customer ID</lable>
+                    <input id="customerId" class="inputElement" type="text">
+                </div>
+                <div class="orderDetailInputDiv">
+                    <lable for="orderItemCount" class="label">Item Count</lable>
                     <input id="orderItemCount" class="inputElement" type="text">
                 </div>
                 <div class="orderDetailInputDiv">
-                    <lable for="orderTotalPrice" class="label">Total Price :</lable>
+                    <lable for="orderTotalPrice" class="label">Total Price</lable>
                     <input id="orderTotalPrice" class="inputElement" type="text">
                 </div>
 
@@ -114,7 +118,7 @@
 <script src="asset/lib/JQuery/jquery-3.6.1.min.js"></script>
 <script>
 
-    let baseUrl = "http://localhost:8080/project01/";
+    let baseUrl = "http://localhost:8080/ThogakadeJavaEEFull_Implimentation_1_0/";
     // console.log("run");
     const orderId = $("#orderSelectBox");
     const orderItemCount = $("#orderItemCount");
@@ -133,7 +137,7 @@
                 orderList = resp;
                 let ids = resp;
                 ids.forEach(o => {
-                        orderId.append(`<option value = "${o.order_id}">${o.order_id}</option>`)
+                        orderId.append(`<option value = "${o.orderId}">${o.orderId}</option>`)
                     }
                 )
                 orderId.val("");
@@ -144,21 +148,31 @@
     }
 
     orderId.change(function () {
+        let description;
         let itemCount = 0;
         let orderTotal=0;
         orderTotalPrice.val("");
         orderItemCount.val("");
         orderList.forEach(order => {
-            if (this.value === order.order_id) {
+            if (this.value === order.orderId) {
                 $.ajax({
-                    url: baseUrl + "orderDetail?order_id=" + order.order_id,
+                    url:baseUrl+ "orders?orderId="+order.orderId,
+                    success:function (resp){
+                        $("#customerId").val(resp.customerId);
+                    }
+
+                });
+
+                $.ajax({
+                    url: baseUrl + "orderDetail?orderId=" + order.orderId,
                     success: function (resp) {
                         // console.log(resp);
                         $("#orderDetailTableBody").empty();
+
                         for(let order of resp){
-                            $("#orderDetailTableBody").append(`<tr><td>${order.item_code}</td><td>${order.description}</td><td>${order.price}</td><td>${order.qty}</td><td>${order.qty*order.price}</td></tr>`)
+                            $("#orderDetailTableBody").append(`<tr><td>${order.itemCode}</td><td>${order.description}</td><td>${order.unitPrice}</td><td>${order.buyQty}</td><td>${order.buyQty*order.unitPrice}</td></tr>`)
                             itemCount++;
-                            orderTotal = orderTotal+(order.qty*order.price);
+                            orderTotal = orderTotal+(order.buyQty*order.unitPrice);
                         }
 
                         orderItemCount.val("  "+itemCount);
